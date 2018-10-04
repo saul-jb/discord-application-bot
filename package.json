@@ -1,0 +1,23 @@
+{
+	"name": "discord-application-bot",
+	"version": "1.0.0",
+	"description": "A custom application bot for discord.",
+	"main": "index.js",
+	"dependencies": {
+		"discord.js": "^11.4.2"
+	},
+	"devDependencies": {},
+	"scripts": {
+		"bot": "node index.js"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/saul-avikar/discord-application-bot.git"
+	},
+	"author": "saul <saul@avikar.io>",
+	"license": "MIT",
+	"bugs": {
+		"url": "https://github.com/saul-avikar/discord-application-bot/issues"
+	},
+	"homepage": "https://github.com/saul-avikar/discord-application-bot#readme"
+}
