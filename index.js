@@ -9,7 +9,7 @@ const botChar = "$";
 const addUserToRole = (msg, parameters) => {
 	const roleName = parameters[0];
 
-	if (roleName) {
+	if (roleName && msg.guild) {
 		const role = msg.guild.roles.find("name", roleName);
 
 		if (role) {
@@ -25,7 +25,7 @@ const addUserToRole = (msg, parameters) => {
 }
 
 const sendUserApplyForm = (msg) => {
-	
+	msg.author.send("test");
 }
 
 client.on('ready', () => {
