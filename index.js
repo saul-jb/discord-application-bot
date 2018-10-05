@@ -15,10 +15,10 @@ const applicationFormCompleted = (data) => {
 	let i = 0, answers = "";
 
 	for (; i < applicationQuestions.length; i++) {
-		answers += applicationQuestions[i] + " " + data.answers[i];
+		answers += `${applicationQuestions[i]}: ${data.answers[i]}\n`;
 	}
 
-	userToSubmitApplicationsTo.send(answers)
+	userToSubmitApplicationsTo.send(`${data.user.username} has submitted a form.\n${answers}`);
 };
 
 const addUserToRole = (msg, roleName) => {
@@ -48,10 +48,9 @@ const sendUserApplyForm = msg => {
 	const user = usersApplicationStatus.find(user => user.id === msg.author.id);
 
 	if (!user) {
-		msg.author.send(`Application commands: '\`\`\`${botChar}cancel, ${botChar}redo\`\`\`'`);
+		msg.author.send(`Application commands: \`\`\`${botChar}cancel, ${botChar}redo\`\`\``);
 		msg.author.send(applicationQuestions[0]);
-
-		usersApplicationStatus.push({id: msg.author.id, currentStep: 0, answers: []});
+		usersApplicationStatus.push({id: msg.author.id, currentStep: 0, answers: [], user: msg.author});
 	} else {
 		msg.author.send(applicationQuestions[user.currentStep]);
 	}
@@ -101,12 +100,18 @@ const endApplicationFormSetup = (msg) => {
 };
 
 const setApplicationSubmissions = (msg) => {
+	if (!msg.guild) {
+		msg.reply("This command can only be used in a guild.");
+		return;
+	}
+
 	if (!msg.member.roles.find("name", "Admin")) {
 		msg.reply("Only admins can do this.")
 		return;
 	}
 
 	userToSubmitApplicationsTo = msg.author;
+	msg.reply("Form submissions will now be sent to you.")
 };
 
 client.on('ready', () => {
@@ -162,7 +167,7 @@ client.on('message', msg => {
 			} else {
 				const user = usersApplicationStatus.find(user => user.id === msg.author.id);
 
-				if (user) {
+				if (user && msg.content) {
 					user.answers.push(msg.content);
 					user.currentStep++;
 
