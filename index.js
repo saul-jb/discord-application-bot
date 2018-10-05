@@ -2,18 +2,30 @@
 
 const Discord = require('discord.js');
 const auth = require("./auth.json");
-const applicationQuestions = require("./application-questions.js");
+let applicationQuestions = require("./application-questions.js");
 
 const client = new Discord.Client();
 const botChar = "$";
 let usersApplicationStatus = [];
+let appNewForm = [];
+let isSettingFormUp = false;
+let userToSubmitApplicationsTo = null;
 
 const applicationFormCompleted = (data) => {
-	console.log(data);
-}
+	let i = 0, answers = "";
 
-const addUserToRole = (msg, parameters) => {
-	const roleName = parameters[0];
+	for (; i < applicationQuestions.length; i++) {
+		answers += applicationQuestions[i] + " " + data.answers[i];
+	}
+
+	userToSubmitApplicationsTo.send(answers)
+};
+
+const addUserToRole = (msg, roleName) => {
+	if (roleName === "Admin") {
+		msg.reply("Stop trying to commit mutiny.")
+		return;
+	}
 
 	if (roleName && msg.guild) {
 		const role = msg.guild.roles.find("name", roleName);
@@ -30,20 +42,20 @@ const addUserToRole = (msg, parameters) => {
 	} else {
 		msg.reply("Please specify a role.");
 	}
-}
+};
 
 const sendUserApplyForm = msg => {
 	const user = usersApplicationStatus.find(user => user.id === msg.author.id);
 
 	if (!user) {
-		msg.author.send(`Application commands: '${botChar}cancel', '${botChar}redo'`);
+		msg.author.send(`Application commands: '\`\`\`${botChar}cancel, ${botChar}redo\`\`\`'`);
 		msg.author.send(applicationQuestions[0]);
 
 		usersApplicationStatus.push({id: msg.author.id, currentStep: 0, answers: []});
 	} else {
 		msg.author.send(applicationQuestions[user.currentStep]);
 	}
-}
+};
 
 const cancelUserApplicationForm = (msg, isRedo = false) => {
 	const user = usersApplicationStatus.find(user => user.id === msg.author.id);
@@ -54,6 +66,47 @@ const cancelUserApplicationForm = (msg, isRedo = false) => {
 	} else if (!isRedo) {
 		msg.reply("You have not started an application form yet.");
 	}
+};
+
+const applicationFormSetup = (msg) => {
+	if (!msg.guild) {
+		msg.reply("This command can only be used in a guild.");
+		return;
+	}
+
+	if (!msg.member.roles.find("name", "Admin")) {
+		msg.reply("This command can only be used by an admin.");
+		return;
+	}
+
+	if (isSettingFormUp) {
+		msg.reply("Someone else is already configuring the form.");
+		return;
+	}
+
+	appNewForm = [];
+	isSettingFormUp = msg.author.id;
+
+	msg.author.send(`Enter questions and enter \`${botChar}endsetup\` when done.`);
+};
+
+const endApplicationFormSetup = (msg) => {
+	if (isSettingFormUp !== msg.author.id) {
+		msg.reply("You are not the one setting the form up.");
+		return;
+	}
+
+	isSettingFormUp = false;
+	applicationQuestions = appNewForm;
+};
+
+const setApplicationSubmissions = (msg) => {
+	if (!msg.member.roles.find("name", "Admin")) {
+		msg.reply("Only admins can do this.")
+		return;
+	}
+
+	userToSubmitApplicationsTo = msg.author;
 };
 
 client.on('ready', () => {
@@ -73,12 +126,12 @@ client.on('message', msg => {
 			command = request;
 		}
 
-		switch (command) {
+		switch (command.toLowerCase()) {
 			case "apply":
 				sendUserApplyForm(msg);
 				break;
-			case "addRole":
-				addUserToRole(msg, parameters);
+			case "addrole":
+				addUserToRole(msg, parameters.join(" "));
 				break;
 			case "cancel":
 				cancelUserApplicationForm(msg);
@@ -87,22 +140,38 @@ client.on('message', msg => {
 				cancelUserApplicationForm(msg, true);
 				sendUserApplyForm(msg);
 				break;
+			case "setup":
+				applicationFormSetup(msg);
+				break;
+			case "endsetup":
+				endApplicationFormSetup(msg);
+				break;
+			case "setsubmissions":
+				setApplicationSubmissions(msg);
+				break;
+			case "help":
+				msg.reply(`Available commands: \`\`\`${botChar}apply, ${botChar}addrole, ${botChar}setup, ${botChar}endsetup, ${botChar}setsubmissions, ${botChar}help\`\`\``);
+				break;
 			default:
 				msg.reply("I do not know this command.");
 		}
 	} else {
 		if (msg.channel.type === "dm") {
-			const user = usersApplicationStatus.find(user => user.id === msg.author.id);
+			if (msg.author.id === isSettingFormUp) {
+				appNewForm.push(msg.content);
+			} else {
+				const user = usersApplicationStatus.find(user => user.id === msg.author.id);
 
-			if (user) {
-				user.answers.push(msg.content);
-				user.currentStep++;
+				if (user) {
+					user.answers.push(msg.content);
+					user.currentStep++;
 
-				if (user.currentStep >= applicationQuestions.length) {
-					applicationFormCompleted(user);
-					msg.author.send("Congradulations your application has been sent!");
-				} else {
-					msg.author.send(applicationQuestions[user.currentStep]);
+					if (user.currentStep >= applicationQuestions.length) {
+						applicationFormCompleted(user);
+						msg.author.send("Congratulations your application has been sent!");
+					} else {
+						msg.author.send(applicationQuestions[user.currentStep]);
+					}
 				}
 			}
 		}
