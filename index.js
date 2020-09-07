@@ -18,7 +18,8 @@ const applicationFormCompleted = (data) => {
 		answers += `${applicationQuestions[i]}: ${data.answers[i]}\n`;
 	}
 
-	userToSubmitApplicationsTo.send(`${data.user.username} has submitted a form.\n${answers}`);
+	if (userToSubmitApplicationsTo)
+		userToSubmitApplicationsTo.send(`${data.user.username} has submitted a form.\n${answers}`);
 };
 
 const addUserToRole = (msg, roleName) => {
@@ -172,6 +173,10 @@ client.on('message', msg => {
 					user.currentStep++;
 
 					if (user.currentStep >= applicationQuestions.length) {
+						if (!userToSubmitApplicationsTo) {
+							msg.author.send("The server admin has not configured $setsubmissions.");
+							return;
+						}
 						applicationFormCompleted(user);
 						msg.author.send("Congratulations your application has been sent!");
 					} else {
