@@ -15,13 +15,6 @@ module.exports = {
 
 		const role = msg.guild.roles.cache.find(role => role.name === strings.adminRole);
 		const guildMember = msg.guild.members.cache.find(member => member.id === authorId);
-/*
-		msg.guild.members.fetch(authorId).then(user => {
-			console.log(user.roles);
-		}).catch(e => {
-			console.error(e);
-		});
-*/
 
 		const roleFromUser = guildMember.roles.cache.get(role.id);
 
