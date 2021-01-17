@@ -82,5 +82,19 @@ module.exports = {
 
 		isSettingFormUp = false;
 		applicationQuestions = appNewForm;
+	},
+
+	setsubmissions: msg => {
+		if (!msg.guild) {
+			msg.reply(strings.notInGuild);
+			return;
+		}
+
+		if (!authorAuthorization(msg))
+			return;
+
+		userToSubmitApplicationsTo = msg.author;
+		
+		msg.reply(strings.setSubmissionsReply);
 	}
 };
