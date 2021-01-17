@@ -2,10 +2,15 @@
 
 const Discord = require('discord.js');
 const auth = require("./auth.json");
+const activationStrings = require("./activation-strings.js");
+const actions = require("./actions.js");
+const strings = require("./strings.js")
+
 let applicationQuestions = require("./application-questions.js");
 
 const client = new Discord.Client();
 const botChar = "$";
+
 let usersApplicationStatus = [];
 let appNewForm = [];
 let isSettingFormUp = false;
@@ -117,9 +122,27 @@ const setApplicationSubmissions = (msg) => {
 
 client.on('ready', () => {
 	console.log(`Logged in as ${client.user.tag}!`);
-});
+})
 
 client.on('message', msg => {
+	console.log(msg.content);
+
+	activationStrings.forEach(str => {
+		const strLen = str.length;
+
+		if (msg.content.substr(0, strLen) === str) {
+			const command = msg.content.substr(strLen);
+
+			try {
+				actions[command](msg);
+			} catch (e) {
+				msg.reply(strings.unknownCommand);
+				console.log(e);
+			}
+		}
+	});
+
+	/*
 	if (msg.content.charAt(0) === botChar) {
 		const request = msg.content.substr(1);
 		let command, parameters = [];
@@ -185,7 +208,7 @@ client.on('message', msg => {
 				}
 			}
 		}
-	}
+	}*/
 });
 
 client.login(auth.token);
