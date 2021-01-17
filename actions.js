@@ -1,5 +1,7 @@
 const strings = require("./strings.js");
 
+let applicationQuestions = require("./application-questions.js");
+
 let isSettingFormUp = false;
 let appNewForm = [];
 let usersApplicationStatus = [];
@@ -25,6 +27,18 @@ const authorAuthorization = msg => {
 	return true;
 };
 
+const applicationFormCompleted = (data) => {
+	let i = 0, answers = "";
+
+	for (; i < applicationQuestions.length; i++) {
+		answers += `${applicationQuestions[i]}: ${data.answers[i]}\n`;
+	}
+
+	if (userToSubmitApplicationsTo)
+		userToSubmitApplicationsTo.send(`${data.user.username} has submitted a form.\n${answers}`);
+};
+
+
 module.exports = {
 	test: msg => {
 		console.log("Test");
@@ -45,7 +59,9 @@ module.exports = {
 						msg.author.send("The server admin has not configured $setsubmissions.");
 						return;
 					}
+
 					applicationFormCompleted(user);
+
 					msg.author.send(strings.applicationSent);
 				} else {
 					msg.author.send(applicationQuestions[user.currentStep]);
@@ -94,7 +110,19 @@ module.exports = {
 			return;
 
 		userToSubmitApplicationsTo = msg.author;
-		
+
 		msg.reply(strings.setSubmissionsReply);
+	},
+
+	apply: msg => {
+		const user = usersApplicationStatus.find(user => user.id === msg.author.id);
+
+		if (!user) {
+			msg.author.send(`Application commands: \`\`\`$cancel, $redo\`\`\``);
+			msg.author.send(applicationQuestions[0]);
+			usersApplicationStatus.push({id: msg.author.id, currentStep: 0, answers: [], user: msg.author});
+		} else {
+			msg.author.send(applicationQuestions[user.currentStep]);
+		}
 	}
 };
