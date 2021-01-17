@@ -5,6 +5,7 @@ let applicationQuestions = require("./application-questions.js");
 let isSettingFormUp = false;
 let appNewForm = [];
 let usersApplicationStatus = [];
+let userToSubmitApplicationsTo = null;
 
 const authorAuthorization = msg => {
 	const authorId = msg.author.id;
@@ -38,12 +39,30 @@ const applicationFormCompleted = (data) => {
 		userToSubmitApplicationsTo.send(`${data.user.username} has submitted a form.\n${answers}`);
 };
 
+const cancelUserApplicationForm = (msg, isRedo = false) => {
+	const user = usersApplicationStatus.find(user => user.id === msg.author.id);
+
+	if (user) {
+		usersApplicationStatus = usersApplicationStatus.filter(el => el.id !== user.id)
+		msg.reply(strings.applicationCancel);
+	} else if (!isRedo) {
+		msg.reply(strings.applicationFormFalseCancel);
+	}
+};
+
+const sendUserApplyForm = msg => {
+	const user = usersApplicationStatus.find(user => user.id === msg.author.id);
+
+	if (!user) {
+		msg.author.send(`Application commands: \`\`\`$cancel, $redo\`\`\``);
+		msg.author.send(applicationQuestions[0]);
+		usersApplicationStatus.push({id: msg.author.id, currentStep: 0, answers: [], user: msg.author});
+	} else {
+		msg.author.send(applicationQuestions[user.currentStep]);
+	}
+};
 
 module.exports = {
-	test: msg => {
-		console.log("Test");
-	},
-
 	directMessage: msg => {
 		if (msg.author.id === isSettingFormUp) {
 			appNewForm.push(msg.content);
@@ -55,8 +74,10 @@ module.exports = {
 				user.currentStep++;
 
 				if (user.currentStep >= applicationQuestions.length) {
+					usersApplicationStatus = usersApplicationStatus.filter(item => item.id != user.id);
+
 					if (!userToSubmitApplicationsTo) {
-						msg.author.send("The server admin has not configured $setsubmissions.");
+						msg.author.send(strings.submissionsNotSet);
 						return;
 					}
 
@@ -96,8 +117,12 @@ module.exports = {
 			return;
 		}
 
-		isSettingFormUp = false;
 		applicationQuestions = appNewForm;
+
+		isSettingFormUp = false;
+		appNewForm = [];
+
+		msg.reply(strings.newFormSetup);
 	},
 
 	setsubmissions: msg => {
@@ -115,14 +140,15 @@ module.exports = {
 	},
 
 	apply: msg => {
-		const user = usersApplicationStatus.find(user => user.id === msg.author.id);
+		sendUserApplyForm(msg);
+	},
 
-		if (!user) {
-			msg.author.send(`Application commands: \`\`\`$cancel, $redo\`\`\``);
-			msg.author.send(applicationQuestions[0]);
-			usersApplicationStatus.push({id: msg.author.id, currentStep: 0, answers: [], user: msg.author});
-		} else {
-			msg.author.send(applicationQuestions[user.currentStep]);
-		}
+	cancel: msg => {
+		cancelUserApplicationForm(msg);
+	},
+
+	redo: msg => {
+		cancelUserApplicationForm(msg, true);
+		sendUserApplyForm(msg);
 	}
 };
