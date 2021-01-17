@@ -6,5 +6,6 @@ module.exports = {
 	unknownRole: "This server is missing the admin role, please contact your server administrator.",
 	notSettingUpEnd: "You have not setup the form.",
 	setSubmissionsReply: "Form submissions will now be sent to you.",
-	applicationCancel: "Application canceled."
+	applicationCancel: "Application canceled.",
+	formSetupInProgress: "Someone else is already configuring the form."
 }

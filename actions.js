@@ -1,5 +1,7 @@
 const strings = require("./strings.js");
 
+let isSettingFormUp = false;
+
 module.exports = {
 	test: msg => {
 		console.log("Test");
@@ -23,14 +25,14 @@ module.exports = {
 			return;
 		}
 
-		/*if (isSettingFormUp) {
-			msg.reply("Someone else is already configuring the form.");
+		if (isSettingFormUp) {
+			msg.reply(strings.formSetupInProgress);
 			return;
-		}*/
-/*
-		appNewForm = [];
+		}
+
+		//appNewForm = [];
 		isSettingFormUp = msg.author.id;
-*/
+
 		msg.author.send(`Enter questions and enter \`$endsetup\` when done.`);
 	}
 };
