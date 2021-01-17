@@ -125,13 +125,15 @@ client.on('ready', () => {
 })
 
 client.on('message', msg => {
-	console.log(msg.content);
+	let hasRanCommand = false;
 
 	activationStrings.forEach(str => {
 		const strLen = str.length;
 
 		if (msg.content.substr(0, strLen) === str) {
 			const command = msg.content.substr(strLen);
+
+			hasRanCommand = true;
 
 			try {
 				actions[command](msg);
@@ -141,6 +143,10 @@ client.on('message', msg => {
 			}
 		}
 	});
+
+	if (!hasRanCommand && msg.channel.type === "dm") {
+		actions.directMessage(msg);
+	}
 
 	/*
 	if (msg.content.charAt(0) === botChar) {

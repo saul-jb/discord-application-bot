@@ -7,5 +7,6 @@ module.exports = {
 	notSettingUpEnd: "You have not setup the form.",
 	setSubmissionsReply: "Form submissions will now be sent to you.",
 	applicationCancel: "Application canceled.",
+	applicationSent: "Congratulations your application has been sent!",
 	formSetupInProgress: "Someone else is already configuring the form."
 }
