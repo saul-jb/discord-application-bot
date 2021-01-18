@@ -11,5 +11,8 @@ module.exports = {
 	applicationFormFalseCancel: "You have not started an application form yet.",
 	applicationSent: "Congratulations your application has been sent!",
 	formSetupInProgress: "Someone else is already configuring the form.",
-	newFormSetup: "The new form has been setup."
+	newFormSetup: "The new form has been setup.",
+	formReceiveMessage: params => `${params.user} has submitted a form.`,
+	formApplyMessage: params => `Application commands: \`\`\`${params.botChar}cancel, ${params.botChar}redo\`\`\``,
+	formSetupMessage: params => `Enter questions and enter \`${params.botChar}endsetup\` when done.`
 }
