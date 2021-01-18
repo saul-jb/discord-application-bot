@@ -166,8 +166,8 @@ module.exports = {
 			return;
 
 		userToSubmitApplicationsTo = msg.channel;
-		
-		msg.reply("KK");
+
+		msg.reply(strings.setSubmissionsChannelReply);
 	},
 
 	apply: msg => {
