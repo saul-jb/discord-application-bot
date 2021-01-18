@@ -156,6 +156,20 @@ module.exports = {
 		msg.reply(strings.setSubmissionsReply);
 	},
 
+	setsubmissionschannel: msg => {
+		if (!msg.guild) {
+			msg.reply(strings.notInGuild);
+			return;
+		}
+
+		if (!authorAuthorization(msg))
+			return;
+
+		userToSubmitApplicationsTo = msg.channel;
+		
+		msg.reply("KK");
+	},
+
 	apply: msg => {
 		sendUserApplyForm(msg);
 	},
