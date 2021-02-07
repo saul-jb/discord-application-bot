@@ -9,7 +9,7 @@ A simple application bot for discord.
 
 ### Server Setup
 1. Add the role `Admin` and add this role to the admins.
-2. Message `$setsubmissions` in your server to tell the bot to submit to you.
+2. Message `$setsubmissions` in your server to tell the bot to submit to you (or alternatively use the `$setsubmissionschannel` command).
 3. Message `$setup` to configure the application form.
 4. Message `$endsetup` to finish.
 
@@ -23,6 +23,9 @@ To add or change the symbol (or string) that goes before the command edit `activ
 
 ### Messages
 To change what the bot says change the appropriate text in `strings.js`
+
+### Default Questions
+To change the default application questions that are set when the bot starts up edit the `application-questions.js` file.
 
 ### Extending Functionality
 To add a command to this bot add a function to the `module.exports` object in `actions.js`.<br>
