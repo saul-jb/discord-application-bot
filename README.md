@@ -1,5 +1,5 @@
 # discord-application-bot
-A simple application bot for discord.
+A simple application bot for discord that allows admins to create application forms for the user to complete.
 
 ## Usage
 
@@ -14,7 +14,7 @@ A simple application bot for discord.
 4. Message `$endsetup` to finish.
 
 ### Applying
-End users need to run `$apply` to submit an application.
+End users need to run `$apply` to start an application.
 
 ## Customising
 
