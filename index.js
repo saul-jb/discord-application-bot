@@ -23,17 +23,25 @@ client.on('message', msg => {
 
 			hasRanCommand = true;
 
+			if (!actions[command])
+				msg.reply(strings.unknownCommand);
+
 			try {
 				actions[command](msg);
 			} catch (e) {
-				msg.reply(strings.unknownCommand);
-				console.log(e);
+				msg.reply(strings.error);
+				console.error(e);
 			}
 		}
 	});
 
 	if (!hasRanCommand && msg.channel.type === "dm") {
-		actions.directMessage(msg);
+		try {
+			actions.directMessage(msg);
+		} catch (e) {
+			msg.reply(strings.error);
+			console.error(e);
+		}
 	}
 });
 
