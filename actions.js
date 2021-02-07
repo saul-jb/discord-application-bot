@@ -11,15 +11,16 @@ let userToSubmitApplicationsTo = null;
 const authorAuthorization = msg => {
 	const authorId = msg.author.id;
 
-	const role = msg.guild.roles.cache.find(role => role.name === strings.adminRole);
-	const guildMember = msg.guild.members.cache.find(member => member.id === authorId);
+	const role = msg.guild.roles.cache.find(role => role.name.toLowerCase() === strings.adminRole.toLowerCase());
 
-	const roleFromUser = guildMember.roles.cache.get(role.id);
+	const guildMember = msg.guild.members.cache.find(member => member.id === authorId);
 
 	if (!role) {
 		msg.reply(strings.unknownRole);
 		return false;
 	}
+
+	const roleFromUser = guildMember.roles.cache.get(role.id);
 
 	if (!roleFromUser) {
 		msg.reply(strings.notAuth);
